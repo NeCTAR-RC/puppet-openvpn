@@ -30,6 +30,11 @@ class openvpn::client inherits openvpn {
 }
 
 class openvpn::server inherits openvpn {
+  file { "/var/log/openvpn":
+    ensure => directory,
+  }
+
+
 # these two need to be passed different options
 # not sure the best way to make this happen.
 	file {
@@ -44,7 +49,7 @@ class openvpn::server inherits openvpn {
 	}
 
 	file {
-		server-conf:
+		monitor-conf:
 			path => "/etc/openvpn/monitor.conf",
 			owner => root,
 			group => root,
@@ -53,5 +58,5 @@ class openvpn::server inherits openvpn {
 			require => Package["openvpn"],
 			content => template("openvpn/server.conf.erb");
 	}
-	
+
 }

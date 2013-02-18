@@ -76,15 +76,16 @@ dev tun
 # OpenVPN can also use a PKCS #12 formatted key file
 # (see "pkcs12" directive in man page).
 ca /var/lib/puppet/ssl/certs/ca.pem
-cert /var/lib/puppet/ssl/certs/<%= hostname %>.pem
-key /var/lib/puppet/ssl/private_keys/<%= hostname %>.pem  # This file should be kept secret
+cert /var/lib/puppet/ssl/certs/<%= fqdn %>.pem
+key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem  # This file should be kept secret
 
 # Diffie hellman parameters.
 # Generate your own with:
 #   openssl dhparam -out dh1024.pem 1024
 # Substitute 2048 for 1024 if you are using
 # 2048 bit keys. 
-dh dh1024.pem
+#dh dh1024.pem
+dh /usr/share/doc/openvpn/examples/sample-keys/dh1024.pem
 
 # Configure server mode and supply a VPN subnet
 # for OpenVPN to draw client addresses from.
