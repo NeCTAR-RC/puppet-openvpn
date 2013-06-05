@@ -3,51 +3,68 @@ class openvpn {
   package { 'openvpn':
     ensure => installed;
   }
-}
 
-class openvpn::client inherits openvpn {
-
-  file { 'client-conf':
-      path    => '/etc/openvpn/client.conf',
-      owner   => root,
-      group   => root,
-      mode    => 0644,
-      require => Package['openvpn'],
-      content => template('openvpn/client.conf.erb'),
-  }
-
-  service { 'openvpn':
-      ensure     => running,
-      enable     => true,
-      hasrestart => true,
-      hasstatus  => true,
-      require    => Package['openvpn'],
-      subscribe  => [File[client-conf], Package['openvpn']],
-  }
-}
-
-class openvpn::server inherits openvpn {
   file { "/var/log/openvpn":
     ensure => directory,
   }
 
-  # these two need to be passed different options
-  # not sure the best way to make this happen.
-  file { 'server-conf':
-      path    => '/etc/openvpn/server.conf',
+  service { 'openvpn':
+    ensure     => running,
+    enable     => true,
+    hasrestart => true,
+    hasstatus  => true,
+    require    => Package['openvpn'],
+  }
+
+  define client($o_remote, $o_port='1194', $o_proto='tcp', $o_dev='tun') {
+
+    include openvpn
+
+    if (is_ip_address($o_remote) and has_interface_with("ipaddress", $o_remote)) or $::fqdn == $o_remote {
+      $is_remote = true
+    }
+
+    if $is_remote != true {
+
+      file { "${name}-client-conf":
+        path    => "/etc/openvpn/${name}-client.conf",
+        owner   => root,
+        group   => root,
+        mode    => 0644,
+        require => Package['openvpn'],
+        notify  => Service['openvpn'],
+        content => template('openvpn/client.conf.erb'),
+      }
+    }
+  }
+
+  define server($o_network='10.10.0.0', $o_netmask='255.255.255.0', $o_port='1194', $o_proto='tcp', $o_dev='tun', $o_management='5555', $o_routes=undef) {
+
+    include openvpn
+
+    if $o_routes == undef {
+      $openvpn_routes = ["${o_network} ${o_netmask}"]
+    } else {
+      $openvpn_routes = $o_routes
+    }
+
+    exec { "${name}-create-dh2048.pem":
+      path    => '/bin:/usr/bin',
+      command => 'openssl dhparam -out /etc/openvpn/dh2048.pem 2048 1>/dev/null 2>&1',
+      timeout => 180,
+      unless  => 'test -f /etc/openvpn/dh2048.pem',
+      require => Package['openvpn'],
+      notify  => Service['openvpn'],
+    }
+
+    file { "${name}-server-conf":
+      path    => "/etc/openvpn/${name}-server.conf",
       owner   => root,
       group   => root,
       mode    => 0644,
       require => Package['openvpn'],
+      notify  => Service['openvpn'],
       content => template('openvpn/server.conf.erb'),
-  }
-
-  file { 'monitor-conf':
-      path    => "/etc/openvpn/monitor.conf",
-      owner   => root,
-      group   => root,
-      mode    => 0644,
-      require => Package["openvpn"],
-      content => template("openvpn/server.conf.erb");
+    }
   }
 }

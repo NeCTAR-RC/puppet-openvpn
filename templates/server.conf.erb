@@ -29,11 +29,10 @@
 # on the same machine, use a different port
 # number for each one.  You will need to
 # open up this port on your firewall.
-port 1194
+port <%= o_port %>
 
 # TCP or UDP server?
-proto tcp
-;proto udp
+proto <%= o_proto %>
 
 # "dev tun" will create a routed IP tunnel,
 # "dev tap" will create an ethernet tunnel.
@@ -49,8 +48,7 @@ proto tcp
 # On most systems, the VPN will not function
 # unless you partially or fully disable
 # the firewall for the TUN/TAP interface.
-;dev tap
-dev tun
+dev <%= o_dev %>
 
 # Windows needs the TAP-Win32 adapter name
 # from the Network Connections panel if you
@@ -85,7 +83,7 @@ key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem  # This file should be kept
 # Substitute 2048 for 1024 if you are using
 # 2048 bit keys. 
 #dh dh1024.pem
-dh /usr/share/doc/openvpn/examples/sample-keys/dh1024.pem
+dh /etc/openvpn/dh2048.pem
 
 # Configure server mode and supply a VPN subnet
 # for OpenVPN to draw client addresses from.
@@ -95,14 +93,14 @@ dh /usr/share/doc/openvpn/examples/sample-keys/dh1024.pem
 # on 10.8.0.1. Comment this line out if you are
 # ethernet bridging. See the man page for more info.
 #server 10.8.0.0 255.255.255.0
-server <%= openvpn_ip %> <%= openvpn_subnet %>
+server <%= o_network %> <%= o_netmask %>
 
 # Maintain a record of client <-> virtual IP address
 # associations in this file.  If OpenVPN goes down or
 # is restarted, reconnecting clients can be assigned
 # the same virtual IP address from the pool that was
 # previously assigned.
-ifconfig-pool-persist ipp.txt
+ifconfig-pool-persist <%= name %>-ipp.txt
 
 # Configure server mode for ethernet bridging.
 # You must first use your OS's bridging capability
@@ -135,8 +133,6 @@ ifconfig-pool-persist ipp.txt
 # to know to route the OpenVPN client
 # address pool (10.8.0.0/255.255.255.0)
 # back to the OpenVPN server.
-;push "route 192.168.10.0 255.255.255.0"
-;push "route 192.168.20.0 255.255.255.0"
 <% openvpn_routes.each do |openvpn_route| %>
 push "route <%= openvpn_route %>"
 <% end -%>
@@ -264,8 +260,8 @@ comp-lzo
 #
 # You can uncomment this out on
 # non-Windows systems.
-;user nobody
-;group nogroup
+user nobody
+group nogroup
 
 # The persist options will try to avoid
 # accessing certain resources on restart
@@ -277,7 +273,7 @@ persist-tun
 # Output a short status file showing
 # current connections, truncated
 # and rewritten every minute.
-status /var/log/openvpn/openvpn-status.log
+status /var/log/openvpn/server-status-<%= name %>.log
 
 # By default, log messages will go to the syslog (or
 # on Windows, if running as a service, they will go to
@@ -287,7 +283,7 @@ status /var/log/openvpn/openvpn-status.log
 # while "log-append" will append to it.  Use one
 # or the other (but not both).
 ;log         openvpn.log
-log-append  /var/log/openvpn/openvpn.log
+log-append  /var/log/openvpn/server-<%= name %>.log
 
 # Set the appropriate level of log
 # file verbosity.
@@ -296,9 +292,13 @@ log-append  /var/log/openvpn/openvpn.log
 # 4 is reasonable for general usage
 # 5 and 6 can help to debug connection problems
 # 9 is extremely verbose
-verb 3
+verb 4
 
 # Silence repeating messages.  At most 20
 # sequential messages of the same message
 # category will be output to the log.
 ;mute 20
+
+# Management port, this needs to be different for each different
+# server running on the same box.
+management 127.0.0.1 <%= o_management %>

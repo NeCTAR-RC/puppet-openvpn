@@ -21,7 +21,7 @@ client
 # unless you partially or fully disable
 # the firewall for the TUN/TAP interface.
 ;dev tap
-dev tun
+dev <%= o_dev %>
 
 # Windows needs the TAP-Win32 adapter name
 # from the Network Connections panel
@@ -33,15 +33,13 @@ dev tun
 # Are we connecting to a TCP or
 # UDP server?  Use the same setting as
 # on the server.
-proto tcp
+proto <%= o_proto %>
 ;proto udp
 
 # The hostname/IP and port of the server.
 # You can have multiple remote entries
 # to load balance between the servers.
-<% openvpn_hosts.each do |openvpn_host| %>
-remote <%= openvpn_host %>
-<% end -%>
+remote <%= o_remote %> <%= o_port %>
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -59,8 +57,8 @@ resolv-retry infinite
 nobind
 
 # Downgrade privileges after initialization (non-Windows only)
-;user nobody
-;group nogroup
+user nobody
+group nogroup
 
 # Try to preserve some state across restarts.
 persist-key
@@ -102,6 +100,7 @@ key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem
 # field set to "server".  The build-key-server
 # script in the easy-rsa folder will do this.
 ;ns-cert-type server
+remote-cert-tls server
 
 # If a tls-auth key is used on the server
 # then every client must also have the key.
@@ -118,7 +117,15 @@ key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem
 comp-lzo
 
 # Set log file verbosity.
-verb 3
+verb 4
 
 # Silence repeating messages
 ;mute 20
+
+# log file
+log-append  /var/log/openvpn/client-<%= name %>.log
+
+# Output a short status file showing
+# current connections, truncated
+# and rewritten every minute.
+status /var/log/openvpn/client-status-<%= name %>.log
