@@ -16,7 +16,7 @@ class openvpn {
     require    => Package['openvpn'],
   }
 
-  define client($o_remote, $o_port='1194', $o_proto='tcp', $o_dev='tun') {
+  define vpnclient($o_remote, $o_port='1194', $o_proto='tcp', $o_dev='tun') {
 
     include openvpn
 
@@ -26,8 +26,14 @@ class openvpn {
 
     if $is_remote != true {
 
+      if $name == 'default' {
+        $path = "/etc/openvpn/client.conf"
+      } else {
+        $path = "/etc/openvpn/${name}-client.conf"
+      }
+
       file { "${name}-client-conf":
-        path    => "/etc/openvpn/${name}-client.conf",
+        path    => $path,
         owner   => root,
         group   => root,
         mode    => 0644,
@@ -38,7 +44,7 @@ class openvpn {
     }
   }
 
-  define server($o_network='10.10.0.0', $o_netmask='255.255.255.0', $o_port='1194', $o_proto='tcp', $o_dev='tun', $o_management='5555', $o_routes=undef) {
+  define vpnserver($o_network='10.10.0.0', $o_netmask='255.255.255.0', $o_port='1194', $o_proto='tcp', $o_dev='tun', $o_management='5555', $o_routes=undef) {
 
     include openvpn
 
@@ -65,6 +71,13 @@ class openvpn {
       require => Package['openvpn'],
       notify  => Service['openvpn'],
       content => template('openvpn/server.conf.erb'),
+    }
+
+    $infra_hosts = hiera('firewall::infra_hosts', [])
+    firewall::multisource {[ prefix($infra_hosts, '200 openvpn,') ]:
+      action => 'accept',
+      proto  => $o_proto,
+      dport  => $o_port,
     }
   }
 }
