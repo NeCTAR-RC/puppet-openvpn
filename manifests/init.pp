@@ -8,6 +8,16 @@ class openvpn {
     ensure => directory,
   }
 
+  include logrotate
+
+  file { "/etc/logrotate.d/openvpn.conf":
+    ensure => present,
+    owner  => root,
+    group  => root,
+    mode   => '0640',
+    source => 'puppet:///modules/openvpn/logrotate.conf',
+  }
+
   service { 'openvpn':
     ensure     => running,
     enable     => true,
