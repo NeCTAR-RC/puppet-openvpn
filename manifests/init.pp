@@ -4,13 +4,13 @@ class openvpn {
     ensure => installed;
   }
 
-  file { "/var/log/openvpn":
+  file { '/var/log/openvpn':
     ensure => directory,
   }
 
   include logrotate
 
-  file { "/etc/logrotate.d/openvpn.conf":
+  file { '/etc/logrotate.d/openvpn.conf':
     ensure => present,
     owner  => root,
     group  => root,
@@ -24,6 +24,15 @@ class openvpn {
     hasrestart => true,
     hasstatus  => true,
     require    => Package['openvpn'],
+  }
+
+  file { '/etc/default/openvpn':
+    ensure => present,
+    owner  => root,
+    group  => root,
+    mode   => '0640',
+    source => 'puppet:///modules/openvpn/etc-default-openvpn',
+    notify => Service['openvpn'],
   }
 
   define vpnclient($o_remote, $o_port='1194', $o_proto='tcp', $o_dev='tun') {
