@@ -98,5 +98,9 @@ class openvpn {
       proto  => $o_proto,
       dport  => $o_port,
     }
+
+    nagios::service { 'check_openvpn':
+      check_command => "check_tcp!${o_port}";
+    }
   }
 }
