@@ -53,9 +53,9 @@ class openvpn {
 
       file { "${name}-client-conf":
         path    => $path,
-        owner   => root,
-        group   => root,
-        mode    => 0644,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
         require => Package['openvpn'],
         notify  => Service['openvpn'],
         content => template('openvpn/client.conf.erb'),
@@ -93,7 +93,7 @@ class openvpn {
     }
 
     $infra_hosts = hiera('firewall::infra_hosts', [])
-    firewall::multisource {[ prefix($infra_hosts, '200 openvpn,') ]:
+    nectar::firewall::multisource {[ prefix($infra_hosts, '200 openvpn,') ]:
       action => 'accept',
       proto  => $o_proto,
       dport  => $o_port,
