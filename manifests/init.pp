@@ -1,4 +1,5 @@
-class openvpn {
+# OpenVPN
+class openvpn($service_ensure='running') {
 
   package { 'openvpn':
     ensure => installed;
@@ -19,7 +20,7 @@ class openvpn {
   }
 
   service { 'openvpn':
-    ensure     => running,
+    ensure     => $service_ensure,
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
