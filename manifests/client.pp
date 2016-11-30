@@ -9,7 +9,8 @@ class openvpn::client($server) inherits openvpn {
   case $::lsbdistcodename {
     'xenial': {
       service {'openvpn@client':
-        ensure => running,
+        ensure  => running,
+        require => Openvpn::Vpnclient['default'],
       }
     }
     default: { }
