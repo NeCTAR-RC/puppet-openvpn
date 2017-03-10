@@ -21,7 +21,7 @@ client
 # unless you partially or fully disable
 # the firewall for the TUN/TAP interface.
 ;dev tap
-dev <%= o_dev %>
+dev <%= @o_dev %>
 
 # Windows needs the TAP-Win32 adapter name
 # from the Network Connections panel
@@ -33,13 +33,13 @@ dev <%= o_dev %>
 # Are we connecting to a TCP or
 # UDP server?  Use the same setting as
 # on the server.
-proto <%= o_proto %>
+proto <%= @o_proto %>
 ;proto udp
 
 # The hostname/IP and port of the server.
 # You can have multiple remote entries
 # to load balance between the servers.
-remote <%= o_remote %> <%= o_port %>
+remote <%= @o_remote %> <%= @o_port %>
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -85,8 +85,8 @@ persist-tun
 # for each client.  A single ca
 # file can be used for all clients.
 ca /var/lib/puppet/ssl/certs/ca.pem
-cert /var/lib/puppet/ssl/certs/<%= fqdn %>.pem
-key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem
+cert /var/lib/puppet/ssl/certs/<%= @fqdn %>.pem
+key /var/lib/puppet/ssl/private_keys/<%= @fqdn %>.pem
 
 # Verify server certificate by checking
 # that the certicate has the nsCertType
@@ -123,9 +123,9 @@ verb 4
 ;mute 20
 
 # log file
-log-append  /var/log/openvpn/client-<%= name %>.log
+log-append  /var/log/openvpn/client-<%= @name %>.log
 
 # Output a short status file showing
 # current connections, truncated
 # and rewritten every minute.
-status /var/log/openvpn/client-status-<%= name %>.log
+status /var/log/openvpn/client-status-<%= @name %>.log
