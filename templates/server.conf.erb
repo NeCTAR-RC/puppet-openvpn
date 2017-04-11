@@ -29,10 +29,10 @@
 # on the same machine, use a different port
 # number for each one.  You will need to
 # open up this port on your firewall.
-port <%= o_port %>
+port <%= @o_port %>
 
 # TCP or UDP server?
-proto <%= o_proto %>
+proto <%= @o_proto %>
 
 # "dev tun" will create a routed IP tunnel,
 # "dev tap" will create an ethernet tunnel.
@@ -48,7 +48,7 @@ proto <%= o_proto %>
 # On most systems, the VPN will not function
 # unless you partially or fully disable
 # the firewall for the TUN/TAP interface.
-dev <%= o_dev %>
+dev <%= @o_dev %>
 
 # Windows needs the TAP-Win32 adapter name
 # from the Network Connections panel if you
@@ -74,8 +74,8 @@ dev <%= o_dev %>
 # OpenVPN can also use a PKCS #12 formatted key file
 # (see "pkcs12" directive in man page).
 ca /var/lib/puppet/ssl/certs/ca.pem
-cert /var/lib/puppet/ssl/certs/<%= fqdn %>.pem
-key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem  # This file should be kept secret
+cert /var/lib/puppet/ssl/certs/<%= @fqdn %>.pem
+key /var/lib/puppet/ssl/private_keys/<%= @fqdn %>.pem  # This file should be kept secret
 
 # Diffie hellman parameters.
 # Generate your own with:
@@ -93,14 +93,14 @@ dh /etc/openvpn/dh2048.pem
 # on 10.8.0.1. Comment this line out if you are
 # ethernet bridging. See the man page for more info.
 #server 10.8.0.0 255.255.255.0
-server <%= o_network %> <%= o_netmask %>
+server <%= @o_network %> <%= @o_netmask %>
 
 # Maintain a record of client <-> virtual IP address
 # associations in this file.  If OpenVPN goes down or
 # is restarted, reconnecting clients can be assigned
 # the same virtual IP address from the pool that was
 # previously assigned.
-ifconfig-pool-persist <%= name %>-ipp.txt
+ifconfig-pool-persist <%= @name %>-ipp.txt
 
 # Configure server mode for ethernet bridging.
 # You must first use your OS's bridging capability
@@ -133,7 +133,7 @@ ifconfig-pool-persist <%= name %>-ipp.txt
 # to know to route the OpenVPN client
 # address pool (10.8.0.0/255.255.255.0)
 # back to the OpenVPN server.
-<% openvpn_routes.each do |openvpn_route| %>
+<% @openvpn_routes.each do |openvpn_route| %>
 push "route <%= openvpn_route %>"
 <% end -%>
 
@@ -273,7 +273,7 @@ persist-tun
 # Output a short status file showing
 # current connections, truncated
 # and rewritten every minute.
-status /var/log/openvpn/server-status-<%= name %>.log
+status /var/log/openvpn/server-status-<%= @name %>.log
 
 # By default, log messages will go to the syslog (or
 # on Windows, if running as a service, they will go to
@@ -283,7 +283,7 @@ status /var/log/openvpn/server-status-<%= name %>.log
 # while "log-append" will append to it.  Use one
 # or the other (but not both).
 ;log         openvpn.log
-log-append  /var/log/openvpn/server-<%= name %>.log
+log-append  /var/log/openvpn/server-<%= @name %>.log
 
 # Set the appropriate level of log
 # file verbosity.
@@ -301,4 +301,4 @@ verb 4
 
 # Management port, this needs to be different for each different
 # server running on the same box.
-management 127.0.0.1 <%= o_management %>
+management 127.0.0.1 <%= @o_management %>
