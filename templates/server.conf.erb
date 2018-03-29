@@ -73,9 +73,9 @@ dev <%= @o_dev %>
 # Any X509 key management system can be used.
 # OpenVPN can also use a PKCS #12 formatted key file
 # (see "pkcs12" directive in man page).
-ca /var/lib/puppet/ssl/certs/ca.pem
-cert /var/lib/puppet/ssl/certs/<%= @fqdn %>.pem
-key /var/lib/puppet/ssl/private_keys/<%= @fqdn %>.pem  # This file should be kept secret
+ca <%= @ssldir %>/certs/ca.pem
+cert <%= @ssldir %>/certs/<%= @fqdn %>.pem
+key <%= @ssldir %>/private_keys/<%= @fqdn %>.pem  # This file should be kept secret
 
 # Diffie hellman parameters.
 # Generate your own with:
