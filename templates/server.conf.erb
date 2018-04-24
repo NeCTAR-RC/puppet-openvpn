@@ -73,9 +73,9 @@ dev <%= @o_dev %>
 # Any X509 key management system can be used.
 # OpenVPN can also use a PKCS #12 formatted key file
 # (see "pkcs12" directive in man page).
-ca <%= @ssldir %>/certs/ca.pem
-cert <%= @ssldir %>/certs/<%= @fqdn %>.pem
-key <%= @ssldir %>/private_keys/<%= @fqdn %>.pem  # This file should be kept secret
+ca <%= @nectar_ssldir %>/certs/ca.pem
+cert <%= @nectar_ssldir %>/certs/<%= @fqdn %>.pem
+key <%= @nectar_ssldir %>/private_keys/<%= @fqdn %>.pem  # This file should be kept secret
 
 # Diffie hellman parameters.
 # Generate your own with:

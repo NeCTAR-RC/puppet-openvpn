@@ -39,9 +39,6 @@ class openvpn($service_ensure='running') {
   define vpnclient($o_remote, $o_port='1194', $o_proto='tcp', $o_dev='tun') {
 
     include openvpn
-    include openvpn::params
-
-    $ssldir = $openvpn::params::ssldir
 
     if (is_ip_address($o_remote) and has_interface_with("ipaddress", $o_remote)) or $::fqdn == $o_remote {
       $is_remote = true
@@ -70,9 +67,6 @@ class openvpn($service_ensure='running') {
   define vpnserver($o_network='10.10.0.0', $o_netmask='255.255.255.0', $o_port='1194', $o_proto='tcp', $o_dev='tun', $o_management='5555', $o_routes=undef) {
 
     include openvpn
-    include openvpn::params
-
-    $ssldir = $openvpn::params::ssldir
 
     if $o_routes == undef {
       $openvpn_routes = ["${o_network} ${o_netmask}"]

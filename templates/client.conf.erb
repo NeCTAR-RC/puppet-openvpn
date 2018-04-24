@@ -84,9 +84,9 @@ persist-tun
 # a separate .crt/.key file pair
 # for each client.  A single ca
 # file can be used for all clients.
-ca <%= @ssldir %>/certs/ca.pem
-cert <%= @ssldir %>/certs/<%= @fqdn %>.pem
-key <%= @ssldir %>/private_keys/<%= @fqdn %>.pem
+ca <%= @puppet_ssldir %>/certs/ca.pem
+cert <%= @puppet_ssldir %>/certs/<%= @fqdn %>.pem
+key <%= @puppet_ssldir %>/private_keys/<%= @fqdn %>.pem
 
 # Verify server certificate by checking
 # that the certicate has the nsCertType
