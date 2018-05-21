@@ -42,6 +42,8 @@ class openvpn($service_ensure='running') {
 
     if (is_ip_address($o_remote) and has_interface_with("ipaddress", $o_remote)) or $::fqdn == $o_remote {
       $is_remote = true
+    } else {
+      $is_remote = false
     }
 
     if $is_remote != true {
